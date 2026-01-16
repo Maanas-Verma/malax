@@ -11,10 +11,16 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+mod server;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            tauri::async_runtime::spawn(async {
+                server::run().await;
+            });
+
             let quit_i = MenuItem::with_id(app, "quit", "Quit Malax", true, None::<&str>)?;
             let settings_i = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
             let open_i = MenuItem::with_id(app, "open", "Open Malax", true, None::<&str>)?;
